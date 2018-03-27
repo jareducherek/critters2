@@ -14,6 +14,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class Main extends Application {
@@ -33,28 +35,33 @@ public class Main extends Application {
   Scene scene;
   private Button start;
   private Button stop;
-  private Button setSeed;
+  private Button seedButton;
   private Button makeCritters;
+  private ChoiceBox<Integer> anmSpeed;
+  private ChoiceBox<Integer> stepAmount;
+  private ChoiceBox<String> getStats;
   BorderPane pane;
 
   @Override
   public void start(Stage stage) throws Exception {
 	    window = stage;
             window.setTitle("Critter World");
+            pane = new BorderPane();
+            HBox hbox = addHBox();
             
-            start = new Button("start animation");
-            stop = new Button("stop animation");
-            setSeed = new Button("Set Seed");
-            makeCritters = new Button("Create Critters");
             
-            VBox layout = new VBox(10);
-            layout.setPadding(new Insets(20, 20, 20, 20));
-            layout.getChildren().addAll(start);
-            layout.getChildren().addAll(stop);
-            layout.getChildren().addAll(setSeed);
-            layout.getChildren().addAll(makeCritters);
+            getStats = new ChoiceBox<>();
+            getStats.getSelectionModel().selectedItemProperty().addListener((v, oldItem, newItem) -> getStats(newItem));
             
-            scene = new Scene(layout, 900, 900);
+//            pane.setTop(start);
+            
+            
+
+//            layout.getChildren().addAll(stop);
+//            layout.getChildren().addAll(setSeed);
+//            layout.getChildren().addAll(makeCritters);
+            
+            scene = new Scene(hbox, 900, 900);
             window.setScene(scene);
             window.show();
             
@@ -70,6 +77,46 @@ public class Main extends Application {
 //	    stage.setScene(scene);
 //	    stage.show();
   }
+  
+  private void startAnimation(ChoiceBox<Integer> anmSpeed){
+      anmSpeed.getValue();
+  }
+  private void step(ChoiceBox<Integer> stepAmount){
+      stepAmount.getValue();
+  }
+  private void setSeed(){
+      
+  }
+  private void getStats(String critter){
+      
+  }
+  
+  public HBox addHBox() {
+    HBox hbox = new HBox();
+    hbox.setPadding(new Insets(15, 12, 15, 12));
+    hbox.setSpacing(10);
+    hbox.setStyle("-fx-background-color: #336699;");
+    
+    anmSpeed = new ChoiceBox<>();
+    stepAmount = new ChoiceBox<>();
+    anmSpeed.getItems().addAll(1,5,10,50);
+    anmSpeed.setValue(1);
+    stepAmount.getItems().addAll(1,5,10,50);
+    stepAmount.setValue(1);
+    
+    start = new Button("start animation");
+    stop = new Button("stop animation");
+    seedButton = new Button("Set Seed");
+    makeCritters = new Button("Create Critters");
+    start.setOnAction(e -> startAnimation(anmSpeed));
+    stop.setOnAction(e -> step(stepAmount));
+    seedButton.setOnAction(e -> setSeed());
+    
+    hbox.getChildren().addAll(start, stop, seedButton, makeCritters, anmSpeed, stepAmount);
+
+    return hbox;
+}
+  
   private class ColorChanger implements EventHandler<ActionEvent>{
 
         @Override
