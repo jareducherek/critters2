@@ -1,12 +1,18 @@
 package assignment5;
 import java.awt.Image;
+import javafx.scene.shape.Rectangle;
+import java.util.ResourceBundle.Control;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.NumberBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
@@ -17,8 +23,12 @@ import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.CycleMethod;
@@ -237,6 +247,29 @@ public class Main extends Application {
  
    
     }
+    
+    public Pane makeGrid(int h, int w){
 
-  }
+        Pane p = new Pane();
+
+        double squareWidth = width/w;
+        Rectangle[][] rec = new Rectangle[h][w];
+        
+        for(int i=0; i<h; i++){
+            for(int j=0; j<w; j++){
+                rec[i][j] = new Rectangle();
+                rec[i][j].setX(i * squareWidth);
+                rec[i][j].setY(j * squareWidth);
+                rec[i][j].setWidth(squareWidth);
+                rec[i][j].setHeight(squareWidth);
+                rec[i][j].setFill(null);
+                rec[i][j].setStroke(Color.BLACK);
+                p.getChildren().add(rec[i][j]);
+            }
+        }
+
+        return p;
+    }
+
+  }  
 }
