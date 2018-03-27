@@ -1,11 +1,14 @@
 package assignment5;
 import java.awt.Image;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
@@ -19,6 +22,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.CycleMethod;
@@ -44,6 +48,7 @@ public class Main extends Application {
   Scene scene;
   private Button start;
   private Button stop;
+  private Button stepButton;
   private Button seedButton;
   private Button makeCritters;
   private ChoiceBox<Integer> anmSpeed;
@@ -100,9 +105,11 @@ public class Main extends Application {
       
   }
   private void step(ChoiceBox<Integer> stepAmount){
-      stepAmount.getValue();
+      int steps = stepAmount.getValue();
       
-      
+      for(int i = 0; i < steps; i++){
+            Critter.worldTimeStep();
+      }
       
       
   }
@@ -119,23 +126,41 @@ public class Main extends Application {
     hbox.setSpacing(20);
     hbox.setStyle("-fx-background-color: #336699;");
     
+    
+    
     anmSpeed = new ChoiceBox<>();
     stepAmount = new ChoiceBox<>();
+    start = new Button("start animation");
+    stop = new Button("stop animation");
+    stepButton = new Button("step");
+    seedButton = new Button("Set Seed");
+    makeCritters = new Button("Create Critters");
+    
     anmSpeed.getItems().addAll(1,5,10,50);
     anmSpeed.setValue(1);
     stepAmount.getItems().addAll(1,5,10,50);
     stepAmount.setValue(1);
     
-    start = new Button("start animation");
-    stop = new Button("stop animation");
-    seedButton = new Button("Set Seed");
-    makeCritters = new Button("Create Critters");
     start.setOnAction(e -> startAnimation(anmSpeed));
     stop.setOnAction(e -> step(stepAmount));
     seedButton.setOnAction(e -> setSeed());
     
-    hbox.getChildren().addAll(start, stop, seedButton, makeCritters, anmSpeed, stepAmount);
+    VBox anm = new VBox(5); // 5 is the spacing between elements in the VBox
+    anm.getChildren().addAll(start, stepButton);
+    anm.setAlignment(Pos.CENTER_LEFT);
 
+    VBox stepper = new VBox(5); // 5 is the spacing between elements in the VBox
+    stepper.getChildren().addAll(anmSpeed, stepAmount);
+    stepper.setAlignment(Pos.CENTER);
+    
+    VBox misc = new VBox(5); // 5 is the spacing between elements in the VBox
+    misc.getChildren().addAll(seedButton, makeCritters);
+    misc.setAlignment(Pos.CENTER_RIGHT);
+
+    
+    hbox.getChildren().addAll(anm, stepper, misc);
+    HBox.setHgrow(misc, Priority.ALWAYS);
+    
     return hbox;
 }
   
