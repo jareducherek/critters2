@@ -1,12 +1,13 @@
 package assignment5;
+import java.awt.Image;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseEvent;
@@ -15,8 +16,16 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 public class Main extends Application {
 
@@ -47,13 +56,16 @@ public class Main extends Application {
 	    window = stage;
             window.setTitle("Critter World");
             pane = new BorderPane();
-            HBox hbox = addHBox();
-            
+
+            pane.setTop(addHBox());
+            pane.setBottom(addVBox());
+//            addStackPane(hbox);         // Add stack to HBox in top region
+            pane.setCenter(addGridPane());
             
             getStats = new ChoiceBox<>();
             getStats.getSelectionModel().selectedItemProperty().addListener((v, oldItem, newItem) -> getStats(newItem));
             
-//            pane.setTop(start);
+            
             
             
 
@@ -61,7 +73,7 @@ public class Main extends Application {
 //            layout.getChildren().addAll(setSeed);
 //            layout.getChildren().addAll(makeCritters);
             
-            scene = new Scene(hbox, 900, 900);
+            scene = new Scene(pane, 900, 900);
             window.setScene(scene);
             window.show();
             
@@ -80,9 +92,19 @@ public class Main extends Application {
   
   private void startAnimation(ChoiceBox<Integer> anmSpeed){
       anmSpeed.getValue();
+      
+      
+      
+      
+      
+      
   }
   private void step(ChoiceBox<Integer> stepAmount){
       stepAmount.getValue();
+      
+      
+      
+      
   }
   private void setSeed(){
       
@@ -91,10 +113,10 @@ public class Main extends Application {
       
   }
   
-  public HBox addHBox() {
+  private HBox addHBox() {
     HBox hbox = new HBox();
-    hbox.setPadding(new Insets(15, 12, 15, 12));
-    hbox.setSpacing(10);
+    hbox.setPadding(new Insets(20, 12, 20, 12));
+    hbox.setSpacing(20);
     hbox.setStyle("-fx-background-color: #336699;");
     
     anmSpeed = new ChoiceBox<>();
@@ -116,6 +138,56 @@ public class Main extends Application {
 
     return hbox;
 }
+  
+  private VBox addVBox(){
+    VBox vbox = new VBox();
+    vbox.setPadding(new Insets(10));
+    vbox.setSpacing(8);
+
+    Text title = new Text("Data");
+    title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+    vbox.getChildren().add(title);
+
+
+
+    return vbox;
+}
+  
+  private GridPane addGridPane() {
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(0, 10, 0, 10));
+
+    // Category in column 2, row 1
+    Text category = new Text("Sales:");
+    category.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+    grid.add(category, 1, 0); 
+
+    // Title in column 3, row 1
+    Text chartTitle = new Text("Current Year");
+    chartTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+    grid.add(chartTitle, 2, 0);
+
+    // Subtitle in columns 2-3, row 2
+    Text chartSubtitle = new Text("Goods and Services");
+    grid.add(chartSubtitle, 1, 1, 2, 1);
+
+
+    // Left label in column 1 (bottom), row 3
+    Text goodsPercent = new Text("Goods\n80%");
+    GridPane.setValignment(goodsPercent, VPos.BOTTOM);
+    grid.add(goodsPercent, 0, 2); 
+
+
+    // Right label in column 4 (top), row 3
+    Text servicesPercent = new Text("Services\n20%");
+    GridPane.setValignment(servicesPercent, VPos.TOP);
+    grid.add(servicesPercent, 3, 2);
+
+    return grid;
+}
+  
   
   private class ColorChanger implements EventHandler<ActionEvent>{
 
