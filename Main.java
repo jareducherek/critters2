@@ -280,15 +280,19 @@ public class Main extends Application {
 
   }  
   
-  public static Pane makeGrid(int h, int w){
+  public static GridPane makeGrid(int h, int w){
 
-        Pane p = new Pane();
-
+        GridPane p = new GridPane();
         double squareWidth = width/w;
+        
+        Text[][] text = new Text[h][w];
         Rectangle[][] rec = new Rectangle[h][w];
+        StackPane s;
+        
         
         for(int i=0; i<h; i++){
             for(int j=0; j<w; j++){
+                s = new StackPane();
                 rec[i][j] = new Rectangle();
                 rec[i][j].setX(i * squareWidth);
                 rec[i][j].setY(j * squareWidth);
@@ -296,9 +300,22 @@ public class Main extends Application {
                 rec[i][j].setHeight(squareWidth);
                 rec[i][j].setFill(null);
                 rec[i][j].setStroke(Color.BLACK);
-                p.getChildren().add(rec[i][j]);
+                                
+                text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                s.getChildren().addAll(rec[i][j],text[i][j]);
+                
+                p.add(s, i, j);
+                
             }
         }
+        
+        
+//        Text text = new Text("$");
+//        Rectangle rec = new Rectangle();
+//        StackPane stack = new StackPane();
+//        
+//        stack.getChildren().addAll(rec,text);
+//        p.getChildren().add(stack);
 
         return p;
     }
