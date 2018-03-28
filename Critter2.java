@@ -42,11 +42,13 @@ public class Critter2 extends Critter {
     @Override
     public void doTimeStep() {
         for(int i = 0; i < 8; i++){
-            if(look(i, false).equals("@")){
+            String temp = look(i, false);
+            if(temp != null && temp.equals("@")){
                 walk(i);
                 setHasMoved(true);
             }
         }
+ 
     }
 
     @Override

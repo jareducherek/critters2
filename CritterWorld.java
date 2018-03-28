@@ -27,34 +27,34 @@ public class CritterWorld {
         numCritters = 0;
         empty();
 
-//        try{
-//            for(int i = 0; i < 100; i++){
-//                Critter.makeCritter("Algae");
-//
-//            }
-//            for(int i = 0; i < 25; i++){
-//                Critter.makeCritter("Craig");
-//
-//            }
-//            for(int i = 0; i < 25; i++){
-//                Critter.makeCritter("Fly");
-//
-//            }
-//            for(int i = 0; i < 25; i++){
-//                Critter.makeCritter("Snake");
-//
-//            }
-//            for(int i = 0; i < 25; i++){
-//                Critter.makeCritter("Cat");
-//
-//            }
-//            for(int i = 0; i < 25; i++){
-//                Critter.makeCritter("Rat");
-//
-//            }
-//        } catch (InvalidCritterException ex) {
-//            System.out.println("Error in Initialization of Critter World");;
-//        }
+        try{
+            for(int i = 0; i < 100; i++){
+                Critter.makeCritter("Algae");
+
+            }
+            for(int i = 0; i < 25; i++){
+                Critter.makeCritter("Craig");
+
+            }
+            for(int i = 0; i < 25; i++){
+                Critter.makeCritter("Critter1");
+
+            }
+            for(int i = 0; i < 25; i++){
+                Critter.makeCritter("Critter2");
+
+            }
+            for(int i = 0; i < 25; i++){
+                Critter.makeCritter("Critter3");
+
+            }
+            for(int i = 0; i < 25; i++){
+                Critter.makeCritter("Critter4");
+
+            }
+        } catch (InvalidCritterException ex) {
+            System.out.println("Error in Initialization of Critter World");;
+        }
 
     }
     /**

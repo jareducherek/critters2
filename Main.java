@@ -74,9 +74,14 @@ public class Main extends Application {
 
             pane.setTop(addHBoxTop());
             pane.setBottom(addHBoxBot());
-//            addStackPane(hbox);         // Add stack to HBox in top region
+            
+//            pane.getBottom().getLayoutBounds().getHeight();
+//            System.out.println(pane.getTop().getLayoutBounds().getHeight());
+//            System.out.println(pane.getCenter().getLayoutBounds().getHeight());
+            
+            CritterWorld.initialize();
             pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-            BorderPane.setAlignment(pane, Pos.CENTER_RIGHT);
+//            BorderPane.setAlignment(pane, Pos.CENTER_RIGHT);
             
             getStats = new ChoiceBox<>();
             getStats.getSelectionModel().selectedItemProperty().addListener((v, oldItem, newItem) -> getStats(newItem));
@@ -89,7 +94,7 @@ public class Main extends Application {
 //            layout.getChildren().addAll(setSeed);
 //            layout.getChildren().addAll(makeCritters);
             
-            scene = new Scene(pane, 900, 900);
+            scene = new Scene(pane);
             window.setScene(scene);
             window.show();
             
@@ -107,9 +112,14 @@ public class Main extends Application {
   }
   
   private void startAnimation(ChoiceBox<Integer> anmSpeed){
-      anmSpeed.getValue();
       
-      
+      for(int i = 0; i < anmSpeed.getValue(); i++){
+          Critter.worldTimeStep();
+          pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
+          Critter.worldFightStep();
+          pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+      }
+           
       
       
       
@@ -127,8 +137,7 @@ public class Main extends Application {
   }
   
   private void setSeed(){
-   
-    
+ 
     Dialog dialog = new TextInputDialog("Enter a seed: ");
     dialog.setTitle("Seed Entry Window");
     dialog.setHeaderText("Current seed: ");
@@ -171,6 +180,7 @@ public class Main extends Application {
         result = alert.showAndWait();
     }
   }
+  
   private HBox addHBoxTop() {
     HBox hBoxTop = new HBox();
     hBoxTop.setPadding(new Insets(20, 12, 20, 12));
@@ -229,64 +239,7 @@ public class Main extends Application {
 
     return hBoxBot;
 }
-  
-  private GridPane addGridPane() {
-    GridPane grid = new GridPane();
-    grid.setHgap(10);
-    grid.setVgap(10);
-    grid.setPadding(new Insets(0, 10, 0, 10));
 
-    // Category in column 2, row 1
-    Text category = new Text("Sales:");
-    category.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-    grid.add(category, 1, 0); 
-
-    // Title in column 3, row 1
-    Text chartTitle = new Text("Current Year");
-    chartTitle.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-    grid.add(chartTitle, 2, 0);
-
-    // Subtitle in columns 2-3, row 2
-    Text chartSubtitle = new Text("Goods and Services");
-    grid.add(chartSubtitle, 1, 1, 2, 1);
-
-
-    // Left label in column 1 (bottom), row 3
-    Text goodsPercent = new Text("Goods\n80%");
-    GridPane.setValignment(goodsPercent, VPos.BOTTOM);
-    grid.add(goodsPercent, 0, 2); 
-
-
-    // Right label in column 4 (top), row 3
-    Text servicesPercent = new Text("Services\n20%");
-    GridPane.setValignment(servicesPercent, VPos.TOP);
-    grid.add(servicesPercent, 3, 2);
-
-    return grid;
-}
-  
-  public BorderPane makeGrid(int w, int h){
-
-        BorderPane p = new BorderPane();
-        double squareWidth = (w > h) ? width/w : height/h;
-        Rectangle[][] rec = new Rectangle[h][w];
-        
-        for(int i=0; i<h; i++){
-            for(int j=0; j<w; j++){
-                rec[i][j] = new Rectangle();
-                rec[i][j].setX(i * squareWidth);
-                rec[i][j].setY(j * squareWidth);
-                rec[i][j].setWidth(squareWidth);
-                rec[i][j].setHeight(squareWidth);
-                rec[i][j].setFill(null);
-                rec[i][j].setStroke(Color.BLACK);
-                p.getChildren().add(rec[i][j]);
-            }
-        }
-
-        return p;
-    }
-  
   public static boolean isInteger(String str) {
         if (str == null) {
             return false;
@@ -310,53 +263,101 @@ public class Main extends Application {
         }
         return true;
     }
-
-  private class ColorChanger implements EventHandler<ActionEvent>{
-
-        @Override
-        public void handle(ActionEvent t) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-      
-  }
   
-  private class MouseHandler implements EventHandler<MouseEvent> {
-	  
-	  boolean drawing;
-	  double newX;
-	  double newY;
-	  double oldX;
-	  double oldY;
-	  
-	  public MouseHandler() {
-		  drawing = false;
-	  }
-	
-    @Override
-    public void handle(MouseEvent event) {
-    	if (event.getEventType() == MouseEvent.MOUSE_CLICKED)
-    	{
-    		drawing = !drawing;
-    		newX = event.getX();
-    		newY = event.getY();
-                System.out.println(newX + "   " + newY);
-    	}
-    	
-    	if (event.getEventType() == MouseEvent.MOUSE_MOVED)
-    	{
-    		if (drawing) {
-    			oldX = newX;
-    			oldY = newY;
-        		newX = event.getX();
-        		newY = event.getY();
-    			gc.strokeLine(oldX, oldY, newX, newY);
-    		}
-    		
+  public static GridPane makeGrid(int h, int w){
 
+        GridPane p = new GridPane();
+        p.setVgap(0);
+        p.setHgap(0);
+        
+        double squareWidth = ((width)/w < (height)/h) ? (width)/w : (height)/h;
+        
+        Text[][] text = new Text[h][w];
+        Rectangle[][] rec = new Rectangle[h][w];
+        StackPane s;
+              
+        
+        for(int i=0; i<h; i++){
+            for(int j=0; j<w; j++){
+                s = new StackPane();
+                s.setPadding(new Insets(0,0,0,0));
+                rec[i][j] = new Rectangle();
+                rec[i][j].setX(j * squareWidth);
+                rec[i][j].setY(i * squareWidth);
+                rec[i][j].setWidth(squareWidth);
+                rec[i][j].setHeight(squareWidth);
+                rec[i][j].setFill(null);
+                rec[i][j].setStroke(Color.BLACK);
+                                
+                text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                s.getChildren().addAll(rec[i][j],text[i][j]);
+                
+                p.add(s, j, i);
+                
+            }
+        }
+        
+        
+//        Text text = new Text("$");
+//        Rectangle rec = new Rectangle();
+//        StackPane stack = new StackPane();
+//        
+//        stack.getChildren().addAll(rec,text);
+//        p.getChildren().add(stack);
 
-    	}
-   
+        return p;
     }
-    
-  }  
+  
+  public static GridPane makeFightGrid(int h, int w){
+
+        GridPane p = new GridPane();
+        p.setVgap(0);
+        p.setHgap(0);
+        
+        double squareWidth = ((width)/w < (height)/h) ? (width)/w : (height)/h;
+        
+        Text[][] text = new Text[h][w];
+        Rectangle[][] rec = new Rectangle[h][w];
+        StackPane s;
+              
+        
+        for(int i=0; i<h; i++){
+            for(int j=0; j<w; j++){
+                s = new StackPane();
+                s.setPadding(new Insets(0,0,0,0));
+                rec[i][j] = new Rectangle();
+                rec[i][j].setX(j * squareWidth);
+                rec[i][j].setY(i * squareWidth);
+                rec[i][j].setWidth(squareWidth);
+                rec[i][j].setHeight(squareWidth);
+                rec[i][j].setFill(null);
+                rec[i][j].setStroke(Color.BLACK);
+                
+                //to be updated...
+                if(CritterWorld.occupied[i][j] == 2){
+                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                }
+                else if(CritterWorld.occupied[i][j] > 2){
+                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                } else {
+                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                }
+                s.getChildren().addAll(rec[i][j],text[i][j]);
+                
+                p.add(s, j, i);
+                
+            }
+        }
+        
+        
+//        Text text = new Text("$");
+//        Rectangle rec = new Rectangle();
+//        StackPane stack = new StackPane();
+//        
+//        stack.getChildren().addAll(rec,text);
+//        p.getChildren().add(stack);
+
+        return p;
+    }
+  
 }

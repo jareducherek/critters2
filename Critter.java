@@ -452,15 +452,13 @@ public abstract class Critter {
         for (Critter c : population) {
             c.setHasMoved(false);
         }
-        if(checkForLeakage()){
-            System.out.println("");
-        }
         for (Critter c : population) {
             c.doTimeStep();
         }
-        if(checkForLeakage()){
-            System.out.println("");
-        }
+        
+    }
+    
+    public static void worldFightStep(){
         //critters list will be updated as fights occur
         for (Critter c : population) {
             for (Critter d : population) {
@@ -486,17 +484,6 @@ public abstract class Critter {
         population.addAll(babies);
         population.removeAll(dead);
         CritterWorld.numCritters = CritterWorld.numCritters - dead.size();
-//        System.out.println("Num Critters: " + CritterWorld.numCritters);
-//        System.out.println("Critters dead: " + dead.size());
-//        System.out.println("Critters population: " + population.size());
-//        int occupiedCount = 0;
-//        for(int i = 0; i < Params.world_height; i++){
-//            for(int j = 0; j < Params.world_width; j++){
-//             
-//                occupiedCount += CritterWorld.occupied[i][j];
-//            }
-//        }
-//        System.out.println(occupiedCount);
         babies.clear();
         dead.clear();
         
