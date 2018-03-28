@@ -194,6 +194,10 @@ public class Main extends Application {
     Text servicesPercent = new Text("Services\n20%");
     GridPane.setValignment(servicesPercent, VPos.TOP);
     grid.add(servicesPercent, 3, 2);
+    
+    Pane gridSquares = makeGrid(20,20);
+    grid.add(gridSquares,0,0);
+    
 
     return grid;
 }
@@ -248,7 +252,11 @@ public class Main extends Application {
    
     }
     
-    public Pane makeGrid(int h, int w){
+    
+
+  }  
+  
+  public static Pane makeGrid(int h, int w){
 
         Pane p = new Pane();
 
@@ -270,6 +278,4 @@ public class Main extends Application {
 
         return p;
     }
-
-  }  
 }
