@@ -1,5 +1,6 @@
 package assignment5;
 import java.awt.Image;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.shape.Rectangle;
@@ -17,23 +18,23 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.text.Font;
@@ -64,22 +65,23 @@ public class Main extends Application {
   private ChoiceBox<Integer> stepAmount;
   private ChoiceBox<String> getStats;
   BorderPane pane;
-
+  
   @Override
   public void start(Stage stage) throws Exception {
 	    window = stage;
             window.setTitle("Critter World");
             pane = new BorderPane();
 
-            pane.setTop(addHBox());
-            pane.setBottom(addVBox());
+            pane.setTop(addHBoxTop());
+            pane.setBottom(addHBoxBot());
 //            addStackPane(hbox);         // Add stack to HBox in top region
-            pane.setCenter(addGridPane());
+            pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+            BorderPane.setAlignment(pane, Pos.CENTER_RIGHT);
             
             getStats = new ChoiceBox<>();
             getStats.getSelectionModel().selectedItemProperty().addListener((v, oldItem, newItem) -> getStats(newItem));
             
-            
+
             
             
 
@@ -113,6 +115,7 @@ public class Main extends Application {
       
       
   }
+  
   private void step(ChoiceBox<Integer> stepAmount){
       int steps = stepAmount.getValue();
       
@@ -122,18 +125,57 @@ public class Main extends Application {
       
       
   }
+  
   private void setSeed(){
-      
+   
+    
+    Dialog dialog = new TextInputDialog("Enter a seed: ");
+    dialog.setTitle("Seed Entry Window");
+    dialog.setHeaderText("Current seed: ");
+    Optional<String> result = dialog.showAndWait();
+    String entered = "none.";
+    if (result.isPresent() && isInteger(result.get())) {
+        Critter.setSeed(Integer.parseInt(result.get()));
+        System.out.println("seed set!");
+    }
+   
   }
+  
   private void getStats(String critter){
       
   }
   
-  private HBox addHBox() {
-    HBox hbox = new HBox();
-    hbox.setPadding(new Insets(20, 12, 20, 12));
-    hbox.setSpacing(20);
-    hbox.setStyle("-fx-background-color: #336699;");
+  private void makeCritters(){
+    Alert alert = new Alert(AlertType.CONFIRMATION);
+    alert.setTitle("Critter Creation Menu");
+    alert.setHeaderText("Current Critters: ");
+    alert.setContentText("Choose your option.");
+
+    ButtonType one = new ButtonType("1");
+    ButtonType two = new ButtonType("5");
+    ButtonType three = new ButtonType("10");
+    ButtonType four = new ButtonType("25");
+    ButtonType buttonTypeFinish = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+    alert.getButtonTypes().setAll(one, two, three, four, buttonTypeFinish);
+
+    Optional<ButtonType> result = alert.showAndWait();
+    while(result.get() != buttonTypeFinish){
+        if (result.get() == one){
+            // ... user chose "One"
+        } else if (result.get() == two) {
+            // ... user chose "Two"
+        } else if (result.get() == four) {
+            // ... user chose "Three"
+        }
+        result = alert.showAndWait();
+    }
+  }
+  private HBox addHBoxTop() {
+    HBox hBoxTop = new HBox();
+    hBoxTop.setPadding(new Insets(20, 12, 20, 12));
+    hBoxTop.setSpacing(20);
+    hBoxTop.setStyle("-fx-background-color: #336699;");
     
     
     
@@ -153,7 +195,7 @@ public class Main extends Application {
     start.setOnAction(e -> startAnimation(anmSpeed));
     stop.setOnAction(e -> step(stepAmount));
     seedButton.setOnAction(e -> setSeed());
-    
+    makeCritters.setOnAction(e -> makeCritters());
     VBox anm = new VBox(5); // 5 is the spacing between elements in the VBox
     anm.getChildren().addAll(start, stepButton);
     anm.setAlignment(Pos.CENTER_LEFT);
@@ -167,24 +209,25 @@ public class Main extends Application {
     misc.setAlignment(Pos.CENTER_RIGHT);
 
     
-    hbox.getChildren().addAll(anm, stepper, misc);
+    hBoxTop.getChildren().addAll(anm, stepper, misc);
     HBox.setHgrow(misc, Priority.ALWAYS);
     
-    return hbox;
+    return hBoxTop;
 }
   
-  private VBox addVBox(){
-    VBox vbox = new VBox();
-    vbox.setPadding(new Insets(10));
-    vbox.setSpacing(8);
-
+  private HBox addHBoxBot(){
+    HBox hBoxBot = new HBox();
+    hBoxBot.setPadding(new Insets(10));
+    hBoxBot.setSpacing(8);
+    hBoxBot.setStyle("-fx-background-color: #336699;");
+    
     Text title = new Text("Data");
     title.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-    vbox.getChildren().add(title);
+    hBoxBot.getChildren().add(title);
 
 
 
-    return vbox;
+    return hBoxBot;
 }
   
   private GridPane addGridPane() {
@@ -222,7 +265,52 @@ public class Main extends Application {
     return grid;
 }
   
+  public BorderPane makeGrid(int w, int h){
+
+        BorderPane p = new BorderPane();
+        double squareWidth = (w > h) ? width/w : height/h;
+        Rectangle[][] rec = new Rectangle[h][w];
+        
+        for(int i=0; i<h; i++){
+            for(int j=0; j<w; j++){
+                rec[i][j] = new Rectangle();
+                rec[i][j].setX(i * squareWidth);
+                rec[i][j].setY(j * squareWidth);
+                rec[i][j].setWidth(squareWidth);
+                rec[i][j].setHeight(squareWidth);
+                rec[i][j].setFill(null);
+                rec[i][j].setStroke(Color.BLACK);
+                p.getChildren().add(rec[i][j]);
+            }
+        }
+
+        return p;
+    }
   
+  public static boolean isInteger(String str) {
+        if (str == null) {
+            return false;
+        }
+        int length = str.length();
+        if (length == 0) {
+            return false;
+        }
+        int i = 0;
+        if (str.charAt(0) == '-') {
+            if (length == 1) {
+                return false;
+            }
+            i = 1;
+        }
+        for (; i < length; i++) {
+            char c = str.charAt(i);
+            if (c < '0' || c > '9') {
+                return false;
+            }
+        }
+        return true;
+    }
+
   private class ColorChanger implements EventHandler<ActionEvent>{
 
         @Override
@@ -231,6 +319,7 @@ public class Main extends Application {
         }
       
   }
+  
   private class MouseHandler implements EventHandler<MouseEvent> {
 	  
 	  boolean drawing;
@@ -267,33 +356,7 @@ public class Main extends Application {
 
     	}
    
-    		
- 
-   
     }
     
-    public Pane makeGrid(int h, int w){
-
-        Pane p = new Pane();
-
-        double squareWidth = width/w;
-        Rectangle[][] rec = new Rectangle[h][w];
-        
-        for(int i=0; i<h; i++){
-            for(int j=0; j<w; j++){
-                rec[i][j] = new Rectangle();
-                rec[i][j].setX(i * squareWidth);
-                rec[i][j].setY(j * squareWidth);
-                rec[i][j].setWidth(squareWidth);
-                rec[i][j].setHeight(squareWidth);
-                rec[i][j].setFill(null);
-                rec[i][j].setStroke(Color.BLACK);
-                p.getChildren().add(rec[i][j]);
-            }
-        }
-
-        return p;
-    }
-
   }  
 }
