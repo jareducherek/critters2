@@ -288,7 +288,7 @@ public class Main extends Application {
         Text[][] text = new Text[h][w];
         Rectangle[][] rec = new Rectangle[h][w];
         StackPane s;
-        
+              
         
         for(int i=0; i<h; i++){
             for(int j=0; j<w; j++){
