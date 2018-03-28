@@ -2,6 +2,8 @@ package assignment5;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class Critter {
 	/* NEW FOR PROJECT 5 */
@@ -445,7 +447,7 @@ public abstract class Critter {
      * babies and algae are added at the end, dead critters are removed at the end.
      * @throws InvalidCritterException 
      */
-    public static void worldTimeStep() throws InvalidCritterException {
+    public static void worldTimeStep() {
 
         for (Critter c : population) {
             c.setHasMoved(false);
@@ -499,7 +501,11 @@ public abstract class Critter {
         dead.clear();
         
         for(int i = 0; i < Params.refresh_algae_count; i++){
-            makeCritter("Algae");
+            try {
+                makeCritter("Algae");
+            } catch (InvalidCritterException ex) {
+                System.out.println("Algae critter must no longer exist, algae will not generate at the end of each step.");;
+            }
         }
     }
 
