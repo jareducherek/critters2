@@ -40,6 +40,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Main extends Application {
 
@@ -81,6 +82,7 @@ public class Main extends Application {
             
             CritterWorld.initialize();
             pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+            
 //            BorderPane.setAlignment(pane, Pos.CENTER_RIGHT);
             
             getStats = new ChoiceBox<>();
@@ -112,23 +114,43 @@ public class Main extends Application {
   }
   
   private void startAnimation(ChoiceBox<Integer> anmSpeed){
-      
+//    AtomicBoolean running = new AtomicBoolean(true);
+    
+    boolean running = true;
+    double tempHeight = pane.getTop().getLayoutBounds().getHeight();
+    
     HBox hBoxTop = new HBox();
     hBoxTop.setPadding(new Insets(20, 12, 20, 12));
     hBoxTop.setSpacing(20);
+    
     hBoxTop.setStyle("-fx-background-color: #336699;");
     stop = new Button("stop animation");
-    stop.setOnAction(e -> step(stepAmount));
+    //stop.setOnAction(e -> running.compareAndSet(true, false));
     hBoxTop.getChildren().addAll(stop);
-    pane.setTop(stop);
     
-    for(int i = 0; i < anmSpeed.getValue(); i++){
-        Critter.worldTimeStep();
-        pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
-        Critter.worldFightStep();
-        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+    pane.setTop(hBoxTop);
+    pane.getTop().prefHeight(tempHeight);
+    
+    
+//    while(running.get()){
+//        for(int i = 0; i < anmSpeed.getValue() && running.get(); i++){
+//            Critter.worldTimeStep();
+//            pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
+//            Critter.worldFightStep();
+//            pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+//        }
+//    }
+    
+    while(running){
+//        for(int i = 0; i < anmSpeed.getValue(); i++){
+//            Critter.worldTimeStep();
+//            pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
+//            Critter.worldFightStep();
+//            pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+//        }
     }
-               
+    
+    //pane.setTop(addHBoxTop());
       
   }
   
@@ -139,6 +161,7 @@ public class Main extends Application {
             Critter.worldTimeStep();
       }
       
+      pane.setCenter(makeGrid(Params.world_height, Params.world_width));
       
   }
   
@@ -210,6 +233,7 @@ public class Main extends Application {
     start.setOnAction(e -> startAnimation(anmSpeed));
     seedButton.setOnAction(e -> setSeed());
     makeCritters.setOnAction(e -> makeCritters());
+    stepButton.setOnAction(e -> step(stepAmount));
     VBox anm = new VBox(5); // 5 is the spacing between elements in the VBox
     anm.getChildren().addAll(start, stepButton);
     anm.setAlignment(Pos.CENTER_LEFT);
