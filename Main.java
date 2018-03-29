@@ -113,16 +113,22 @@ public class Main extends Application {
   
   private void startAnimation(ChoiceBox<Integer> anmSpeed){
       
-      for(int i = 0; i < anmSpeed.getValue(); i++){
-          Critter.worldTimeStep();
-          pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
-          Critter.worldFightStep();
-          pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-      }
-           
-      
-      
-      
+    HBox hBoxTop = new HBox();
+    hBoxTop.setPadding(new Insets(20, 12, 20, 12));
+    hBoxTop.setSpacing(20);
+    hBoxTop.setStyle("-fx-background-color: #336699;");
+    stop = new Button("stop animation");
+    stop.setOnAction(e -> step(stepAmount));
+    hBoxTop.getChildren().addAll(stop);
+    pane.setTop(stop);
+    
+    for(int i = 0; i < anmSpeed.getValue(); i++){
+        Critter.worldTimeStep();
+        pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
+        Critter.worldFightStep();
+        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+    }
+               
       
   }
   
@@ -192,7 +198,6 @@ public class Main extends Application {
     anmSpeed = new ChoiceBox<>();
     stepAmount = new ChoiceBox<>();
     start = new Button("start animation");
-    stop = new Button("stop animation");
     stepButton = new Button("step");
     seedButton = new Button("Set Seed");
     makeCritters = new Button("Create Critters");
@@ -203,7 +208,6 @@ public class Main extends Application {
     stepAmount.setValue(1);
     
     start.setOnAction(e -> startAnimation(anmSpeed));
-    stop.setOnAction(e -> step(stepAmount));
     seedButton.setOnAction(e -> setSeed());
     makeCritters.setOnAction(e -> makeCritters());
     VBox anm = new VBox(5); // 5 is the spacing between elements in the VBox

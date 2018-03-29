@@ -458,6 +458,9 @@ public abstract class Critter {
         
     }
     
+    /**
+     * split world time step into two functions, to aid in fight animation sequence.
+     */
     public static void worldFightStep(){
         //critters list will be updated as fights occur
         for (Critter c : population) {
