@@ -39,12 +39,12 @@ public class TragicCritter extends Critter {
      * @param avoidingCritters
      * @return
      */
-    public static void runStats(java.util.List<Critter> avoidingCritters) {
+    public static String runStats(java.util.List<Critter> avoidingCritters) {
 		if(avoidingCritters.size() >= 2) {
-                    System.out.println("Still can't get to each other");
+                    return "Still can't get to each other";
 		}
 		else {
-                    System.out.println("Collided, sadly");
+                    return "Collided, sadly";
 		}
 	}
 	@Override
