@@ -29,7 +29,7 @@ public abstract class Critter {
      * need to, but please preserve that intent as you implement them. 
      */
     public javafx.scene.paint.Color viewColor() { 
-            return javafx.scene.paint.Color.WHITE; 
+        return javafx.scene.paint.Color.WHITE; 
     }
 
     public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.BLACK; }
@@ -130,6 +130,7 @@ public abstract class Critter {
             CritterWorld.occupied[y_coord][x_coord]--;
             if(CritterWorld.occupied[y_coord][x_coord] == 0){
                 CritterWorld.critterGrid[y_coord][x_coord] = "";
+                CritterWorld.crittersArr[y_coord][x_coord] = null; //poop
             }
             
             switch (direction) {
@@ -168,6 +169,7 @@ public abstract class Critter {
 
             CritterWorld.occupied[y_coord][x_coord]++;
             CritterWorld.critterGrid[y_coord][x_coord] = this.toString();
+            CritterWorld.crittersArr[y_coord][x_coord] = this; //poop
             
  //           System.out.println(this.toString() + " just walked, new coords: " + x_coord + "," + y_coord + ". New Energy: " + energy);
         }
@@ -186,6 +188,7 @@ public abstract class Critter {
             CritterWorld.occupied[y_coord][x_coord]--;
             if(CritterWorld.occupied[y_coord][x_coord] == 0){
                 CritterWorld.critterGrid[y_coord][x_coord] = "";
+                CritterWorld.crittersArr[y_coord][x_coord] = null; //poop
             }
             
             switch (direction) {
@@ -224,6 +227,7 @@ public abstract class Critter {
 
             CritterWorld.occupied[y_coord][x_coord]++;
             CritterWorld.critterGrid[y_coord][x_coord] = this.toString();
+            CritterWorld.crittersArr[y_coord][x_coord] = this; //poop
             
 //            System.out.println(this.toString() + " just ran, new coords: " + x_coord + "," + y_coord + ". New Energy: " + energy);
         }
@@ -236,11 +240,13 @@ public abstract class Critter {
         CritterWorld.occupied[y_coord][x_coord]--;
         if(CritterWorld.occupied[y_coord][x_coord] == 0){
             CritterWorld.critterGrid[y_coord][x_coord] = "";
+            CritterWorld.crittersArr[y_coord][x_coord] = null; //poop
         }
         x_coord = prev_x_coord;
         y_coord = prev_y_coord;
         CritterWorld.occupied[y_coord][x_coord]++;
         CritterWorld.critterGrid[y_coord][x_coord] = this.toString();
+        CritterWorld.crittersArr[y_coord][x_coord] = this; //poop
     }
     
     /**
@@ -250,11 +256,13 @@ public abstract class Critter {
         CritterWorld.occupied[y_coord][x_coord]--;
         if(CritterWorld.occupied[y_coord][x_coord] == 0){
             CritterWorld.critterGrid[y_coord][x_coord] = "";
+            CritterWorld.crittersArr[y_coord][x_coord] = null; //poop
         }
         x_coord = prev_x_coord;
         y_coord = prev_y_coord;
         CritterWorld.occupied[y_coord][x_coord]++;
         CritterWorld.critterGrid[y_coord][x_coord] = this.toString();
+        CritterWorld.crittersArr[y_coord][x_coord] = this; //poop
     }
     
     /**
@@ -267,6 +275,7 @@ public abstract class Critter {
             CritterWorld.occupied[y_coord][x_coord]--;
             if(CritterWorld.occupied[y_coord][x_coord] == 0){
                 CritterWorld.critterGrid[y_coord][x_coord] = "";
+                CritterWorld.crittersArr[y_coord][x_coord] = null; //poop
             }
             alive = false;
             dead.add(this);
@@ -321,6 +330,7 @@ public abstract class Critter {
 
                 CritterWorld.occupied[offspring.y_coord][offspring.x_coord]++;
                 CritterWorld.critterGrid[offspring.y_coord][offspring.x_coord] = offspring.toString();
+                CritterWorld.crittersArr[y_coord][x_coord] = offspring; //poop
                 CritterWorld.numCritters++;
                 offspring.energy = Math.floorDiv(this.energy, 2);
                 this.energy = this.energy - offspring.energy;
@@ -351,6 +361,7 @@ public abstract class Critter {
                 c.y_coord = getRandomInt(Params.world_height);
                 CritterWorld.occupied[c.y_coord][c.x_coord]++;
                 CritterWorld.critterGrid[c.y_coord][c.x_coord] = c.toString();
+                CritterWorld.crittersArr[c.y_coord][c.x_coord] = c; //poop
                 c.energy = Params.start_energy;
                 population.add(c);
                 c.prev_x_coord = c.x_coord;
@@ -548,10 +559,12 @@ public abstract class Critter {
             CritterWorld.occupied[this.getY_coord()][this.getX_coord()]--;
             if(CritterWorld.occupied[this.getY_coord()][this.getX_coord()] == 0){
                 CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = "";
+                CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = null; //poop
             }
             super.x_coord = new_x_coord;
             CritterWorld.occupied[this.getY_coord()][this.getX_coord()]++;
             CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = this.toString();
+            CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = this; //poop
         }
         /**
          * set y coord
@@ -561,10 +574,12 @@ public abstract class Critter {
             CritterWorld.occupied[this.getY_coord()][this.getX_coord()]--;
             if(CritterWorld.occupied[this.getY_coord()][this.getX_coord()] == 0){
                 CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = "";
+                CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = null; //poop
             }
             super.x_coord = new_y_coord;
             CritterWorld.occupied[this.getY_coord()][this.getX_coord()]++;
             CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = this.toString();
+            CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = this; //poop
         }
         /**
          * get x coord
@@ -638,10 +653,12 @@ public abstract class Critter {
         CritterWorld.occupied[this.getY_coord()][this.getX_coord()]--;
         if(CritterWorld.occupied[this.getY_coord()][this.getX_coord()] == 0){
             CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = "";
+            CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = null; //poop
         }
         x_coord = new_x_coord;
         CritterWorld.occupied[this.getY_coord()][this.getX_coord()]++;
         CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = this.toString();
+        CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = this; //poop
     }
     /**
      * set y coord
@@ -651,10 +668,12 @@ public abstract class Critter {
         CritterWorld.occupied[this.getY_coord()][this.getX_coord()]--;
         if(CritterWorld.occupied[this.getY_coord()][this.getX_coord()] == 0){
             CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = "";
+            CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = null; //poop
         }
         x_coord = new_y_coord;
         CritterWorld.occupied[this.getY_coord()][this.getX_coord()]++;
         CritterWorld.critterGrid[this.getY_coord()][this.getX_coord()] = this.toString();
+        CritterWorld.crittersArr[this.getY_coord()][this.getX_coord()] = this; //poop
     }
     /**
      * get x coord

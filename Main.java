@@ -319,9 +319,6 @@ public class Main extends Application {
           p.setVgap(0);
           p.setHgap(0);
           
-          //Image image = new Image("c:/Users/Michael/Desktop/mouse_pointer.png");
-                  
-
           double squareWidth = ((width)/w < (height)/h) ? (width)/w : (height)/h;
 
           Text[][] text = new Text[h][w];
@@ -343,19 +340,19 @@ public class Main extends Application {
                   text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
                   
                   if (CritterWorld.critterGrid[i][j].equals("1")) {
-                      rec[i][j].setStroke(Color.RED);
+                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
                       rec[i][j].setStrokeWidth(1);
                       text[i][j] = new Text("♆");
                   } else if (CritterWorld.critterGrid[i][j].equals("2")) {
-                      rec[i][j].setStroke(Color.BLUE);
+                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
                       rec[i][j].setStrokeWidth(1);
                       text[i][j] = new Text("⎈"); 
                   } else if (CritterWorld.critterGrid[i][j].equals("3")) {
-                      rec[i][j].setStroke(Color.GREEN);
+                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
                       rec[i][j].setStrokeWidth(1);
                       text[i][j] = new Text("ↂ"); 
                   } else if (CritterWorld.critterGrid[i][j].equals("4")) {
-                      rec[i][j].setStroke(Color.ORANGE);
+                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
                       rec[i][j].setStrokeWidth(1);
                       text[i][j] = new Text("☀"); 
                   } else if (CritterWorld.critterGrid[i][j].equals("@")) {
