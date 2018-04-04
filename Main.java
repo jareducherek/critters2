@@ -398,21 +398,17 @@ public class Main extends Application {
                 
                 //to be updated...
                 if(CritterWorld.occupied[i][j] == 2){
-                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
-                    rec[i][j].setStroke(Color.RED);
-                    rec[i][j].setStrokeWidth(8);
+                    rec[i][j].setFill(Color.RED);
+                    text[i][j] = new Text(" ");
                 }
                 else if(CritterWorld.occupied[i][j] > 2){
-                  text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
-                    rec[i][j].setStroke(Color.RED);
-                    rec[i][j].setStrokeWidth(10);
+                    rec[i][j].setFill(Color.DARKRED);
+                    text[i][j] = new Text(" ");
                 } else {
-                  text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
                 }
                 
-
                 s.getChildren().addAll(rec[i][j],text[i][j]);
-                
                 p.add(s, j, i);
                 
             }
