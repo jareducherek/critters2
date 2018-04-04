@@ -47,6 +47,8 @@ import javafx.animation.AnimationTimer;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javax.print.DocFlavor.URL;
 //import static javafx.scene.input.DataFormat.URL;
 
@@ -94,7 +96,7 @@ public class Main extends Application {
         pane.setBottom(addHBoxBot("Critter"));
        
         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-
+        
         getStats = new ChoiceBox<>();
         getStats.getSelectionModel().selectedItemProperty().addListener((v, oldItem, newItem) -> getStats(newItem));
 
@@ -175,8 +177,10 @@ public class Main extends Application {
               Critter.worldTimeStep();
               Critter.worldFightStep();
         }
-
+        
+        
         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+        
 
     }
 
@@ -305,13 +309,15 @@ public class Main extends Application {
           GridPane p = new GridPane();
           p.setVgap(0);
           p.setHgap(0);
+          
+          //Image image = new Image("c:/Users/Michael/Desktop/mouse_pointer.png");
+                  
 
           double squareWidth = ((width)/w < (height)/h) ? (width)/w : (height)/h;
 
           Text[][] text = new Text[h][w];
           Rectangle[][] rec = new Rectangle[h][w];
           StackPane s;
-
 
           for(int i=0; i<h; i++){
               for(int j=0; j<w; j++){
@@ -326,13 +332,34 @@ public class Main extends Application {
                   rec[i][j].setStroke(Color.BLACK);
 
                   text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                  
+                  if (CritterWorld.critterGrid[i][j].equals("1")) {
+                      rec[i][j].setStroke(Color.RED);
+                      rec[i][j].setStrokeWidth(1);
+                      text[i][j] = new Text("♆");
+                  } else if (CritterWorld.critterGrid[i][j].equals("2")) {
+                      rec[i][j].setStroke(Color.BLUE);
+                      rec[i][j].setStrokeWidth(1);
+                      text[i][j] = new Text("⎈"); 
+                  } else if (CritterWorld.critterGrid[i][j].equals("3")) {
+                      rec[i][j].setStroke(Color.GREEN);
+                      rec[i][j].setStrokeWidth(1);
+                      text[i][j] = new Text("ↂ"); 
+                  } else if (CritterWorld.critterGrid[i][j].equals("4")) {
+                      rec[i][j].setStroke(Color.ORANGE);
+                      rec[i][j].setStrokeWidth(1);
+                      text[i][j] = new Text("☀"); 
+                  } else if (CritterWorld.critterGrid[i][j].equals("@")) {
+                      text[i][j] = new Text("♣");
+                  } else if (CritterWorld.critterGrid[i][j].equals("C")) {
+                      text[i][j] = new Text("❀");
+                  }
+                                  
                   s.getChildren().addAll(rec[i][j],text[i][j]);
-
                   p.add(s, j, i);
 
               }
           }
-
 
   //        Text text = new Text("$");
   //        Rectangle rec = new Rectangle();
@@ -372,12 +399,18 @@ public class Main extends Application {
                 //to be updated...
                 if(CritterWorld.occupied[i][j] == 2){
                     text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                    rec[i][j].setStroke(Color.RED);
+                    rec[i][j].setStrokeWidth(8);
                 }
                 else if(CritterWorld.occupied[i][j] > 2){
-                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                  text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                    rec[i][j].setStroke(Color.RED);
+                    rec[i][j].setStrokeWidth(10);
                 } else {
-                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
+                  text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
                 }
+                
+
                 s.getChildren().addAll(rec[i][j],text[i][j]);
                 
                 p.add(s, j, i);
