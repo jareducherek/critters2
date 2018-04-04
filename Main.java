@@ -38,15 +38,22 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.animation.AnimationTimer;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.ChoiceDialog;
+import javafx.stage.WindowEvent;
 import javax.print.DocFlavor.URL;
 //import static javafx.scene.input.DataFormat.URL;
 
@@ -74,6 +81,11 @@ public class Main extends Application {
     private ChoiceBox<Integer> anmSpeed;
     private ChoiceBox<Integer> stepAmount;
     private ChoiceBox<String> getStats;
+    private ChoiceBox<String> critterChoices;
+    private Button one;
+    private Button five;
+    private Button fifty;
+    private String currentSelectedCritter = "Critter";
     private ArrayList<String> critterList = new ArrayList<String>() {{
         add("Critter");
     }};
@@ -90,9 +102,10 @@ public class Main extends Application {
         window.setTitle("Critter World");
         pane = new BorderPane();
 
+        pane.setBottom(addHBoxBot(currentSelectedCritter));
         pane.setTop(addHBoxTop());
-        pane.setBottom(addHBoxBot("Critter"));
-       
+        
+        getStats.getValue();
         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
 
         getStats = new ChoiceBox<>();
@@ -119,51 +132,77 @@ public class Main extends Application {
 
     pane.setTop(hBoxTop);
     pane.getTop().prefHeight(tempHeight);
-
-    backgroundThread = new Service<Void>() {
-        @Override
-        protected Task<Void> createTask() {
-            return new Task<Void>(){
-            
-                @Override
-                protected Void call() throws Exception{
-                    while(running.get()){
-                        if(anmSpeed.getValue()==1){                           
-                            Critter.worldTimeStep();
-                            System.out.println("update fight anim");    
-                            TimeUnit.SECONDS.sleep(1);
-    //                        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-                            Critter.worldFightStep();
-                            System.out.println("update walk");
-                            TimeUnit.SECONDS.sleep(1);
-    //                        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-                        } else {
-                            for(int i = 0; i < anmSpeed.getValue(); i++){
-                                Critter.worldTimeStep();
-                                Critter.worldFightStep();
-                            }
-                            Critter.worldTimeStep();
-                            System.out.println("update fight anim");    
-                            TimeUnit.SECONDS.sleep(1);
- //                           pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
-                            Critter.worldFightStep();
-                            System.out.println("update walk");
-                            TimeUnit.SECONDS.sleep(1);
-   //                         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-                        }
-                    }
-                    
-                    return null;
-                }
-            };  
-        }
-    };    
-    backgroundThread.setOnSucceeded((WorkerStateEvent t) -> {
-        pane.setTop(addHBoxTop());
-        System.out.println("Done!");
-    });
     
-    backgroundThread.restart(); 
+    Timer t = new Timer();
+
+    t.scheduleAtFixedRate(
+        new TimerTask()
+        {
+            public void run()
+            {
+                for(int i = 0; i < anmSpeed.getValue()-1; i++){
+                    Critter.worldTimeStep();
+                    Critter.worldFightStep();
+                }
+                Critter.worldTimeStep();
+                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                Critter.worldFightStep();
+                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+                System.out.println("3 seconds passed");
+                
+            }
+        },
+        0,      // run first occurrence immediately
+        5000);
+//    backgroundThread = new Service<Void>() {
+//        @Override
+//        protected Task<Void> createTask() {
+//            return new Task<Void>(){
+//            
+//                @Override
+//                protected Void call() throws Exception{
+//                    while(running.get()){
+//                        if(anmSpeed.getValue()==1){                           
+//                            Critter.worldTimeStep();
+//                            System.out.println("update fight anim");    
+//                            TimeUnit.SECONDS.sleep(1);
+//    //                        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+//                            Critter.worldFightStep();
+//                            System.out.println("update walk");
+//                            TimeUnit.SECONDS.sleep(1);
+//    //                        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+//                        } else {
+//                            for(int i = 0; i < anmSpeed.getValue(); i++){
+//                                Critter.worldTimeStep();
+//                                Critter.worldFightStep();
+//                            }
+//                            Critter.worldTimeStep();
+//                            System.out.println("update fight anim");    
+//                            TimeUnit.SECONDS.sleep(1);
+// //                           pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
+//                            Critter.worldFightStep();
+//                            System.out.println("update walk");
+//                            TimeUnit.SECONDS.sleep(1);
+//   //                         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+//                        }
+//                    }
+//                    
+//                    return null;
+//                }
+//            };  
+//        }
+//    };    
+//    backgroundThread.setOnSucceeded((WorkerStateEvent t) -> {
+//        pane.setTop(addHBoxTop());
+//        System.out.println("Done!");
+//    });
+//    
+//    backgroundThread.restart(); 
     
 
   }
@@ -198,77 +237,90 @@ public class Main extends Application {
 
     }
 
-    private void makeCritters(){
-      Alert alert = new Alert(AlertType.CONFIRMATION);
-      alert.setTitle("Critter Creation Menu");
-      alert.setHeaderText("Current Critters: ");
-      alert.setContentText("Choose your option.");
-
-      ButtonType one = new ButtonType("1");
-      ButtonType two = new ButtonType("5");
-      ButtonType three = new ButtonType("10");
-      ButtonType four = new ButtonType("25");
-      ButtonType buttonTypeFinish = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-
-      alert.getButtonTypes().setAll(one, two, three, four, buttonTypeFinish);
-
-      Optional<ButtonType> result = alert.showAndWait();
-      while(result.get() != buttonTypeFinish){
-          if (result.get() == one){
-              // ... user chose "One"
-          } else if (result.get() == two) {
-              // ... user chose "Two"
-          } else if (result.get() == four) {
-              // ... user chose "Three"
-          }
-          result = alert.showAndWait();
-      }
-    }
-
     private HBox addHBoxTop() {
-      HBox hBoxTop = new HBox();
-      hBoxTop.setPadding(new Insets(20, 12, 20, 12));
-      hBoxTop.setSpacing(20);
-      hBoxTop.setStyle("-fx-background-color: #336699;");
+        HBox hBoxTop = new HBox();
+        hBoxTop.setPadding(new Insets(20, 12, 20, 12));
+        hBoxTop.setSpacing(20);
+        hBoxTop.setStyle("-fx-background-color: #336699;");
 
 
 
-      anmSpeed = new ChoiceBox<>();
-      stepAmount = new ChoiceBox<>();
-      start = new Button("start animation");
-      stepButton = new Button("step");
-      seedButton = new Button("Set Seed");
-      makeCritters = new Button("Create Critters");
+        anmSpeed = new ChoiceBox<>();
+        stepAmount = new ChoiceBox<>();
+        start = new Button("start animation");
+        stepButton = new Button("step");
+        seedButton = new Button("Set Seed");
 
-      anmSpeed.getItems().addAll(1,5,10,50);
-      anmSpeed.setValue(1);
-      stepAmount.getItems().addAll(1,5,10,50);
-      stepAmount.setValue(1);
+        one = new Button("1");
+        five = new Button("5");
+        fifty = new Button("50");
+        ChoiceBox<String> critterChoices = new ChoiceBox<>();
+        
+        for(String s : critterList){
+            if(!s.equals("Critter")){
+                critterChoices.getItems().add(s);
+            }
+        }
+        
+        anmSpeed.getItems().addAll(1,5,10,50);
+        anmSpeed.setValue(1);
+        stepAmount.getItems().addAll(1,5,10,50);
+        stepAmount.setValue(1);
+        
+        start.setOnAction(e -> startAnimation(anmSpeed));
+        seedButton.setOnAction(e -> setSeed());
+        stepButton.setOnAction(e -> step(stepAmount));
+        one.setOnAction(e ->{
+            try {
+                Critter.makeCritter(critterChoices.getValue(), 1);
+                pane.setBottom(addHBoxBot(currentSelectedCritter));
+            } catch (InvalidCritterException ex) {
+                System.out.println("invalid critter creation attempt");
+            }
+        });
+        five.setOnAction(e ->{
+            try {
+                Critter.makeCritter(critterChoices.getValue(), 5);
+                pane.setBottom(addHBoxBot(currentSelectedCritter));
+            } catch (InvalidCritterException ex) {
+                System.out.println("invalid critter creation attempt");
+            }
+        });
+        fifty.setOnAction(e ->{
+            try {
+                Critter.makeCritter(critterChoices.getValue(), 50);
+                pane.setBottom(addHBoxBot(currentSelectedCritter));
+            } catch (InvalidCritterException ex) {
+                System.out.println("invalid critter creation attempt");
+            }
+        });
+        
+        
+        VBox anm = new VBox(5); // 5 is the spacing between elements in the VBox
+        anm.getChildren().addAll(start, stepButton);
+        anm.setAlignment(Pos.CENTER_LEFT);
 
-      start.setOnAction(e -> startAnimation(anmSpeed));
-      seedButton.setOnAction(e -> setSeed());
-      makeCritters.setOnAction(e -> makeCritters());
-      stepButton.setOnAction(e -> step(stepAmount));
-      VBox anm = new VBox(5); // 5 is the spacing between elements in the VBox
-      anm.getChildren().addAll(start, stepButton);
-      anm.setAlignment(Pos.CENTER_LEFT);
-
-      VBox stepper = new VBox(5); // 5 is the spacing between elements in the VBox
-      stepper.getChildren().addAll(anmSpeed, stepAmount);
-      stepper.setAlignment(Pos.CENTER);
-
-      VBox misc = new VBox(5); // 5 is the spacing between elements in the VBox
-      misc.getChildren().addAll(seedButton, makeCritters);
-      misc.setAlignment(Pos.CENTER_RIGHT);
+        VBox stepper = new VBox(5); // 5 is the spacing between elements in the VBox
+        stepper.getChildren().addAll(anmSpeed, stepAmount);
+        stepper.setAlignment(Pos.CENTER);
+        
+        HBox makeCritters = new HBox(5);
+        makeCritters.getChildren().addAll(one, five, fifty, critterChoices);
+        makeCritters.setAlignment(Pos.CENTER_RIGHT);
+        
+        VBox misc = new VBox(5); // 5 is the spacing between elements in the VBox
+        misc.getChildren().addAll(seedButton, makeCritters);
+        misc.setAlignment(Pos.CENTER_RIGHT);
 
 
-      hBoxTop.getChildren().addAll(anm, stepper, misc);
-      HBox.setHgrow(misc, Priority.ALWAYS);
+        hBoxTop.getChildren().addAll(anm, stepper, misc);
+        HBox.setHgrow(misc, Priority.ALWAYS);
 
-      return hBoxTop;
+        return hBoxTop;
   }
 
     private HBox addHBoxBot(String stats){
+        currentSelectedCritter = stats;
         HBox hBoxBot = new HBox();
         hBoxBot.setPadding(new Insets(10));
         hBoxBot.setSpacing(8);

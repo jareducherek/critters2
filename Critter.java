@@ -360,19 +360,21 @@ public abstract class Critter {
      * @param critter_class_name
      * @throws InvalidCritterException
      */
-    public static void makeCritter(String critter_class_name) throws InvalidCritterException {
+    public static void makeCritter(String critter_class_name, int num) throws InvalidCritterException {
         try {
-            Critter c = (Critter) Class.forName(Critter.class.getPackage().toString().split(" ")[1] + "." + critter_class_name).newInstance();
+            for(int i = 0; i < num; i++){
+                Critter c = (Critter) Class.forName(Critter.class.getPackage().toString().split(" ")[1] + "." + critter_class_name).newInstance();
 
-            c.x_coord = getRandomInt(Params.world_width);
-            c.y_coord = getRandomInt(Params.world_height);
-            CritterWorld.occupied[c.y_coord][c.x_coord]++;
-            CritterWorld.critterGrid[c.y_coord][c.x_coord] = c.toString();
-            c.energy = Params.start_energy;
-            population.add(c);
-            c.prev_x_coord = c.x_coord;
-            c.prev_y_coord = c.y_coord;
-            CritterWorld.numCritters++;
+                c.x_coord = getRandomInt(Params.world_width);
+                c.y_coord = getRandomInt(Params.world_height);
+                CritterWorld.occupied[c.y_coord][c.x_coord]++;
+                CritterWorld.critterGrid[c.y_coord][c.x_coord] = c.toString();
+                c.energy = Params.start_energy;
+                population.add(c);
+                c.prev_x_coord = c.x_coord;
+                c.prev_y_coord = c.y_coord;
+                CritterWorld.numCritters++;
+            }
         } 
         catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             throw new InvalidCritterException(critter_class_name);
@@ -491,13 +493,12 @@ public abstract class Critter {
         babies.clear();
         dead.clear();
         
-        for(int i = 0; i < Params.refresh_algae_count; i++){
             try {
-                makeCritter("Algae");
+                makeCritter("Algae", Params.refresh_algae_count);
             } catch (InvalidCritterException ex) {
                 System.out.println("Algae critter must no longer exist, algae will not generate at the end of each step.");;
             }
-        }
+        
     }
 
     /**

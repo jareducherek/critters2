@@ -28,30 +28,13 @@ public class CritterWorld {
         empty();
 
         try{
-            for(int i = 0; i < 100; i++){
-                Critter.makeCritter("Algae");
+            Critter.makeCritter("Algae", 100);
+            Critter.makeCritter("Craig", 25);
+            Critter.makeCritter("Critter1", 25);
+            Critter.makeCritter("Critter2", 25);
+            Critter.makeCritter("Critter3", 25);
+            Critter.makeCritter("Critter4", 25);
 
-            }
-            for(int i = 0; i < 25; i++){
-                Critter.makeCritter("Craig");
-
-            }
-            for(int i = 0; i < 25; i++){
-                Critter.makeCritter("Critter1");
-
-            }
-            for(int i = 0; i < 25; i++){
-                Critter.makeCritter("Critter2");
-
-            }
-            for(int i = 0; i < 25; i++){
-                Critter.makeCritter("Critter3");
-
-            }
-            for(int i = 0; i < 25; i++){
-                Critter.makeCritter("Critter4");
-
-            }
         } catch (InvalidCritterException ex) {
             System.out.println("Error in Initialization of Critter World");;
         }
