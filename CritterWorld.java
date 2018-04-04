@@ -17,6 +17,8 @@ public class CritterWorld {
     public static String[][] critterGrid = new String[Params.world_height][Params.world_width];  
     private static String myPackage;
     
+    public static Critter[][] crittersArr = new Critter[Params.world_height][Params.world_width];
+    
     static {
         myPackage = Critter.class.getPackage().toString().split(" ")[1];
     }
