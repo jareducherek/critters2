@@ -38,7 +38,7 @@ public class Critter1 extends Critter {
                 } else {
                     String temp = look(direction, false);
                     
-                    if (!temp.equals(null)) {
+                    if (temp != null) {
                         return true;
                     }                                         
                     return false; 

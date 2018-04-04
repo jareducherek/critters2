@@ -6,100 +6,97 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class Critter {
-	/* NEW FOR PROJECT 5 */
-	public enum CritterShape {
-		CIRCLE,
-		SQUARE,
-		TRIANGLE,
-		DIAMOND,
-		STAR,
-                PENTAGON,
-                HOURGLASS, 
-                CURVE
-	}
-	
-	/* the default color is white, which I hope makes critters invisible by default
-	 * If you change the background color of your View component, then update the default
-	 * color to be the same as you background 
-	 * 
-	 * critters must override at least one of the following three methods, it is not 
-	 * proper for critters to remain invisible in the view
-	 * 
-	 * If a critter only overrides the outline color, then it will look like a non-filled 
-	 * shape, at least, that's the intent. You can edit these default methods however you 
-	 * need to, but please preserve that intent as you implement them. 
-	 */
-	public javafx.scene.paint.Color viewColor() { 
-		return javafx.scene.paint.Color.WHITE; 
-	}
-	
-	public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.BLACK; }
-	public javafx.scene.paint.Color viewFillColor() { return viewColor(); }
-	
-	public abstract CritterShape viewShape(); 
-	
-	private static String myPackage;
-	private	static List<Critter> population = new java.util.ArrayList<Critter>();
-	private static List<Critter> babies = new java.util.ArrayList<Critter>();
-        private static List<Critter> dead = new java.util.ArrayList<Critter>();
+    public enum CritterShape {
+            CIRCLE,
+            SQUARE,
+            TRIANGLE,
+            DIAMOND,
+            STAR,
+            PENTAGON,
+            HOURGLASS, 
+            CURVE
+    }
+
+    /* the default color is white, which I hope makes critters invisible by default
+     * If you change the background color of your View component, then update the default
+     * color to be the same as you background 
+     * 
+     * critters must override at least one of the following three methods, it is not 
+     * proper for critters to remain invisible in the view
+     * 
+     * If a critter only overrides the outline color, then it will look like a non-filled 
+     * shape, at least, that's the intent. You can edit these default methods however you 
+     * need to, but please preserve that intent as you implement them. 
+     */
+    public javafx.scene.paint.Color viewColor() { 
+            return javafx.scene.paint.Color.WHITE; 
+    }
+
+    public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.BLACK; }
+    public javafx.scene.paint.Color viewFillColor() { return viewColor(); }
+
+    public abstract CritterShape viewShape(); 
+
+    private static String myPackage;
+    private	static List<Critter> population = new java.util.ArrayList<Critter>();
+    private static List<Critter> babies = new java.util.ArrayList<Critter>();
+    private static List<Critter> dead = new java.util.ArrayList<Critter>();
 
 
-	// Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
-	static {
-		myPackage = Critter.class.getPackage().toString().split(" ")[1];
-	}
-	
-	protected final String look(int direction, boolean steps) {
-            int step = 1;
-            if(steps == true){
-                step = 2;
-            }
-            energy = energy - Params.look_energy_cost;
-            int x_temp = x_coord;
-            int y_temp = y_coord;
+    // Gets the package name.  This assumes that Critter and its subclasses are all in the same package.
+    static {
+            myPackage = Critter.class.getPackage().toString().split(" ")[1];
+    }
 
-            if(alive()){
-
-                switch (direction) {
-                    case 0:
-                        x_temp = (x_coord + step) % Params.world_width;
-                        break;
-                    case 1:
-                        x_temp = (x_coord + step) % Params.world_width;
-                        y_temp = (y_coord == 0) ? Params.world_height-step: y_coord-step;          
-                        break;
-                    case 2:
-                        y_temp = (y_coord == 0) ? Params.world_height-step: y_coord-step; 
-                        break;
-                    case 3:
-                        x_temp = (x_coord == 0) ? Params.world_width-step: x_coord-step;
-                        y_temp = (y_coord == 0) ? Params.world_height-step: y_coord-step; 
-                        break;
-                    case 4:
-                        x_temp = (x_coord == 0) ? Params.world_width-step: x_coord-step; 
-                        break;
-                    case 5:
-                        x_temp = (x_coord == 0) ? Params.world_width-step: x_coord-step;
-                        y_temp = (y_coord + step) % Params.world_height;
-                        break;
-                    case 6:
-                        y_temp = (y_coord + step) % Params.world_height;
-                        break;
-                    case 7:
-                        x_temp = (x_coord + step) % Params.world_width;
-                        y_temp = (y_coord + step) % Params.world_height;
-                        break;
-                    default:
-                        break;
-                }
-
-                return CritterWorld.critterGrid[y_temp][x_temp];
-            }
-            return null;
+    protected final String look(int direction, boolean steps) {
+        int step = 1;
+        if(steps == true){
+            step = 2;
         }
-	
-	/* rest is unchanged from Project 4 */
-	
+        energy = energy - Params.look_energy_cost;
+        int x_temp = x_coord;
+        int y_temp = y_coord;
+
+        if(alive()){
+            switch (direction) {
+                case 0:
+                    x_temp = (x_coord + step) % Params.world_width;
+                    break;
+                case 1:
+                    x_temp = (x_coord + step) % Params.world_width;
+                    y_temp = (y_coord == 0) ? Params.world_height-step: (y_coord == 1 && step == 2) ? Params.world_height-1 : y_temp-step;            
+                    break;
+                case 2:
+                    y_temp = (y_coord == 0) ? Params.world_height-step: (y_coord == 1 && step == 2) ? Params.world_height-1 : y_temp-step;   
+                    break;
+                case 3:
+                    x_temp = (x_coord == 0) ? Params.world_width-step: (x_coord == 1 && step == 2) ? Params.world_width -1 : x_coord-step;
+                    y_temp = (y_coord == 0) ? Params.world_height-step: (y_coord == 1 && step == 2) ? Params.world_height-1 : y_temp-step;  
+                    break;
+                case 4:
+                    x_temp = (x_coord == 0) ? Params.world_width-step: (x_coord == 1 && step == 2) ? Params.world_width -1 : x_coord-step; 
+                    break;
+                case 5:
+                    x_temp = (x_coord == 0) ? Params.world_width-step: (x_coord == 1 && step == 2) ? Params.world_width -1 : x_coord-step;
+                    y_temp = (y_coord + step) % Params.world_height;
+                    break;
+                case 6:
+                    y_temp = (y_coord + step) % Params.world_height;
+                    break;
+                case 7:
+                    x_temp = (x_coord + step) % Params.world_width;
+                    y_temp = (y_coord + step) % Params.world_height;
+                    break;
+                default:
+                    break;
+            }
+            if(CritterWorld.occupied[y_temp][x_temp] > 0){
+                return null;
+            }
+            return CritterWorld.critterGrid[y_temp][x_temp];
+        }
+        return null;
+    }
     
     private static java.util.Random rand = new java.util.Random();
     /**
@@ -107,33 +104,18 @@ public abstract class Critter {
      * @param max
      * @return 
      */
-    public static int getRandomInt(int max) {
-        return rand.nextInt(max);
-    }
-
-    public static void setSeed(long new_seed) {
-        rand = new java.util.Random(new_seed);
-    }
-
 
     /* a one-character long string that visually depicts your critter in the ASCII interface */
     public String toString() { return ""; }
 
     private int energy = 0;
-    /**
-     * helper method
-     * @return energy
-     */
-    protected int getEnergy() { 
-        return energy; 
-    }
-
     private int x_coord;
     private int y_coord;
     private int prev_x_coord;
     private int prev_y_coord;
     private boolean hasMoved;
     private boolean alive = true;
+    private static long seed = -1;
     
     /**
      * moves the critter in the specified direction, updates helper grid parameters described in CritterWorld.
@@ -716,6 +698,26 @@ public abstract class Critter {
             } 
         }
         return false;
+    }
+    
+        public static int getRandomInt(int max) {
+        return rand.nextInt(max);
+    }
+
+    public static void setSeed(long new_seed) {
+        seed = new_seed;
+        rand = new java.util.Random(new_seed);
+    }
+    
+    public static long getSeed(){
+        return seed;
+    }
+    /**
+     * helper method
+     * @return energy
+     */
+    protected int getEnergy() { 
+        return energy; 
     }
 	
 	

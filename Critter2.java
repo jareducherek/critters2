@@ -30,7 +30,7 @@ public class Critter2 extends Critter {
             if (enemy.equals("3") || enemy.equals("4")) {
                 String temp = look(direction, false);
 
-                if (!temp.equals(null)) {
+                if (temp != null) {
                     return true;
                 } 
                 return false;  

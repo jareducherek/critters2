@@ -26,7 +26,7 @@ public class AlgaephobicCritter extends Critter {
 			}
 		}			
 		for (int dir = 0; dir < 8; dir++) {
-			if(this.look(dir, true) == null) {
+			if(this.alive() && this.look(dir, true) == null) {
 				run(dir);
 				return;
 			}

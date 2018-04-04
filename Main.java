@@ -47,14 +47,18 @@ import java.util.logging.Logger;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ChoiceDialog;
 import javafx.stage.WindowEvent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 import javax.print.DocFlavor.URL;
 //import static javafx.scene.input.DataFormat.URL;
 
@@ -106,11 +110,7 @@ public class Main extends Application {
         pane.setBottom(addHBoxBot(currentSelectedCritter));
         pane.setTop(addHBoxTop());
         
-        getStats.getValue();
         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-        
-        getStats = new ChoiceBox<>();
-        getStats.getSelectionModel().selectedItemProperty().addListener((v, oldItem, newItem) -> getStats(newItem));
 
         scene = new Scene(pane);
         window.setScene(scene);
@@ -128,7 +128,7 @@ public class Main extends Application {
 
     hBoxTop.setStyle("-fx-background-color: #336699;");
     stop = new Button("stop animation");
-    stop.setOnAction(e -> running.compareAndSet(true, false));
+    
     hBoxTop.getChildren().addAll(stop);
 
     pane.setTop(hBoxTop);
@@ -136,74 +136,29 @@ public class Main extends Application {
     
     Timer t = new Timer();
 
-    t.scheduleAtFixedRate(
-        new TimerTask()
-        {
-            public void run()
-            {
-                for(int i = 0; i < anmSpeed.getValue()-1; i++){
-                    Critter.worldTimeStep();
-                    Critter.worldFightStep();
-                }
+    Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+
+        @Override
+        public void handle(ActionEvent event) {
+            for(int i = 0; i < anmSpeed.getValue()-1; i++){
                 Critter.worldTimeStep();
-                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
                 Critter.worldFightStep();
-                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-                System.out.println("3 seconds passed");
-                
             }
-        },
-        0,      // run first occurrence immediately
-        5000);
-//    backgroundThread = new Service<Void>() {
-//        @Override
-//        protected Task<Void> createTask() {
-//            return new Task<Void>(){
-//            
-//                @Override
-//                protected Void call() throws Exception{
-//                    while(running.get()){
-//                        if(anmSpeed.getValue()==1){                           
-//                            Critter.worldTimeStep();
-//                            System.out.println("update fight anim");    
-//                            TimeUnit.SECONDS.sleep(1);
-//    //                        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-//                            Critter.worldFightStep();
-//                            System.out.println("update walk");
-//                            TimeUnit.SECONDS.sleep(1);
-//    //                        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-//                        } else {
-//                            for(int i = 0; i < anmSpeed.getValue(); i++){
-//                                Critter.worldTimeStep();
-//                                Critter.worldFightStep();
-//                            }
-//                            Critter.worldTimeStep();
-//                            System.out.println("update fight anim");    
-//                            TimeUnit.SECONDS.sleep(1);
-// //                           pane.setCenter(makeFightGrid(Params.world_height, Params.world_width));
-//                            Critter.worldFightStep();
-//                            System.out.println("update walk");
-//                            TimeUnit.SECONDS.sleep(1);
-//   //                         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-//                        }
-//                    }
-//                    
-//                    return null;
-//                }
-//            };  
-//        }
-//    };    
-//    backgroundThread.setOnSucceeded((WorkerStateEvent t) -> {
-//        pane.setTop(addHBoxTop());
-//        System.out.println("Done!");
-//    });
-//    
-//    backgroundThread.restart(); 
+            Critter.worldTimeStep();
+            pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+            pane.setBottom(addHBoxBot(currentSelectedCritter));
+        }
+    }));
+    stop.setOnAction(new EventHandler<ActionEvent>() {
+
+        @Override
+        public void handle(ActionEvent event) {
+            fiveSecondsWonder.stop();
+            pane.setTop(addHBoxTop());
+        }
+    });
+    fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
+    fiveSecondsWonder.play();
     
 
   }
@@ -212,13 +167,11 @@ public class Main extends Application {
         int steps = stepAmount.getValue();
 
         for(int i = 0; i < steps; i++){
-              Critter.worldTimeStep();
-              Critter.worldFightStep();
-        }
-        
-        
+            Critter.worldTimeStep();                        
+            Critter.worldFightStep();
+        }    
         pane.setCenter(makeGrid(Params.world_height, Params.world_width));
-        
+        pane.setBottom(addHBoxBot(currentSelectedCritter));
 
     }
 
@@ -226,20 +179,20 @@ public class Main extends Application {
 
       Dialog dialog = new TextInputDialog("Enter a seed: ");
       dialog.setTitle("Seed Entry Window");
-      dialog.setHeaderText("Current seed: ");
+      if(Critter.getSeed() == -1){
+          dialog.setHeaderText("Seed is currently unset");
+      } else {
+        dialog.setHeaderText("Current seed: " + Critter.getSeed());
+      }
       Optional<String> result = dialog.showAndWait();
       String entered = "none.";
-      if (result.isPresent() && isInteger(result.get())) {
-          Critter.setSeed(Integer.parseInt(result.get()));
-          System.out.println("seed set!");
+      if (result.isPresent() && isLong(result.get())) {
+          Critter.setSeed(Long.valueOf(result.get()));
+          System.out.println("Current seed: " + Critter.getSeed());
       }
 
     }
-
-    private void getStats(String critter){
-
-    }
-
+    
     private HBox addHBoxTop() {
         HBox hBoxTop = new HBox();
         hBoxTop.setPadding(new Insets(20, 12, 20, 12));
@@ -277,6 +230,7 @@ public class Main extends Application {
             try {
                 Critter.makeCritter(critterChoices.getValue(), 1);
                 pane.setBottom(addHBoxBot(currentSelectedCritter));
+                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
             } catch (InvalidCritterException ex) {
                 System.out.println("invalid critter creation attempt");
             }
@@ -285,6 +239,7 @@ public class Main extends Application {
             try {
                 Critter.makeCritter(critterChoices.getValue(), 5);
                 pane.setBottom(addHBoxBot(currentSelectedCritter));
+                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
             } catch (InvalidCritterException ex) {
                 System.out.println("invalid critter creation attempt");
             }
@@ -293,6 +248,7 @@ public class Main extends Application {
             try {
                 Critter.makeCritter(critterChoices.getValue(), 50);
                 pane.setBottom(addHBoxBot(currentSelectedCritter));
+                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
             } catch (InvalidCritterException ex) {
                 System.out.println("invalid critter creation attempt");
             }
@@ -342,7 +298,9 @@ public class Main extends Application {
         } 
         
         getStats = new ChoiceBox<>();
-        getStats.getItems().addAll(critterList);
+        for(String s : critterList){
+            getStats.getItems().add(s);
+        }
         getStats.setValue(stats);
         getStats.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> pane.setBottom(addHBoxBot(newValue)));
         HBox misc = new HBox(5);
@@ -447,7 +405,6 @@ public class Main extends Application {
                 rec[i][j].setFill(null);
                 rec[i][j].setStroke(Color.BLACK);
                 
-                //to be updated...
                 if(CritterWorld.occupied[i][j] == 2){
                     rec[i][j].setFill(Color.RED);
                     text[i][j] = new Text(" ");
@@ -476,7 +433,7 @@ public class Main extends Application {
         return p;
     }
 
-    public static boolean isInteger(String str) {
+    public static boolean isLong(String str) {
           if (str == null) {
               return false;
           }
@@ -508,7 +465,8 @@ public class Main extends Application {
         File[] fileArray = f.listFiles();
         for(File names : fileArray){
             if(names.getName().contains(".java") && !names.getName().equals("Main.java") && !names.getName().equals("Params.java")
-                    && !names.getName().equals("InvalidCritterException.java") && !names.getName().equals("Header.java") && !names.getName().equals("CritterWorld.java")){
+                    && !names.getName().equals("InvalidCritterException.java") && !names.getName().equals("Header.java") && !names.getName().equals("CritterWorld.java") &&
+                    !names.getName().equals("Critter.java")){
                 critterNames.add(names.getName().split("\\.")[0]);
             }
             
