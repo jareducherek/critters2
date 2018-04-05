@@ -44,15 +44,18 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.Animation;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
+import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.ChoiceDialog;
 import javafx.stage.WindowEvent;
@@ -136,7 +139,7 @@ public class Main extends Application {
     
     Timer t = new Timer();
 
-    Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(5), new EventHandler<ActionEvent>() {
+    Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 
         @Override
         public void handle(ActionEvent event) {
@@ -145,6 +148,7 @@ public class Main extends Application {
                 Critter.worldFightStep();
             }
             Critter.worldTimeStep();
+            Critter.worldFightStep();
             pane.setCenter(makeGrid(Params.world_height, Params.world_width));
             pane.setBottom(addHBoxBot(currentSelectedCritter));
         }
@@ -155,11 +159,11 @@ public class Main extends Application {
         public void handle(ActionEvent event) {
             fiveSecondsWonder.stop();
             pane.setTop(addHBoxTop());
+            pane.setBottom(addHBoxBot(currentSelectedCritter));
         }
     });
     fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
     fiveSecondsWonder.play();
-    
 
   }
 
@@ -341,19 +345,15 @@ public class Main extends Application {
                   
                   if (CritterWorld.critterGrid[i][j].equals("1")) {
                       rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      rec[i][j].setStrokeWidth(1);
                       text[i][j] = new Text("♆");
                   } else if (CritterWorld.critterGrid[i][j].equals("2")) {
                       rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      rec[i][j].setStrokeWidth(1);
-                      text[i][j] = new Text("⎈"); 
+                      text[i][j] = new Text("❆"); 
                   } else if (CritterWorld.critterGrid[i][j].equals("3")) {
                       rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      rec[i][j].setStrokeWidth(1);
                       text[i][j] = new Text("ↂ"); 
                   } else if (CritterWorld.critterGrid[i][j].equals("4")) {
                       rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      rec[i][j].setStrokeWidth(1);
                       text[i][j] = new Text("☀"); 
                   } else if (CritterWorld.critterGrid[i][j].equals("@")) {
                       text[i][j] = new Text("♣");
@@ -366,14 +366,7 @@ public class Main extends Application {
 
               }
           }
-
-  //        Text text = new Text("$");
-  //        Rectangle rec = new Rectangle();
-  //        StackPane stack = new StackPane();
-  //        
-  //        stack.getChildren().addAll(rec,text);
-  //        p.getChildren().add(stack);
-
+          
           return p;
       }
 
