@@ -1,5 +1,4 @@
 package assignment5;
-import static com.sun.javafx.css.FontFace.FontFaceSrcType.URL;
 import java.util.Optional;
 import javafx.scene.shape.Rectangle;
 import javafx.application.Application;
@@ -8,15 +7,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.TextInputDialog;
@@ -25,45 +20,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ArrayBlockingQueue;
 import javafx.concurrent.Service;
-import java.awt.TextArea;
 import java.io.File;
-import java.io.IOException;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.animation.Animation;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
-import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.scene.control.ChoiceDialog;
-import javafx.stage.WindowEvent;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.util.Duration;
-import javax.print.DocFlavor.URL;
-//import static javafx.scene.input.DataFormat.URL;
 
 
 public class Main extends Application {
@@ -72,8 +38,8 @@ public class Main extends Application {
       launch(args);
     }
 
-    private static final int width = 900;
-    private static final int height = 900;
+    public static final int width = 1000;
+    public static final int height = 800;
     private GraphicsContext gc;
     private ColorPicker colorPicker;
     private Color color = Color.BLACK;
@@ -97,7 +63,8 @@ public class Main extends Application {
     private ArrayList<String> critterList = new ArrayList<String>() {{
         add("Critter");
     }};
-    BorderPane pane;
+    private BorderPane pane;
+    public static GridPane modelGrid = new GridPane();
     private Service<Void> backgroundThread;
     
     @Override
@@ -105,6 +72,8 @@ public class Main extends Application {
         critterList.addAll(getCritters());
         CritterWorld.initialize();
         getCritters();
+        Painter.setSize();
+        Painter.paint();
         
         window = stage;
         window.setTitle("Critter World");
@@ -113,7 +82,9 @@ public class Main extends Application {
         pane.setBottom(addHBoxBot(currentSelectedCritter));
         pane.setTop(addHBoxTop());
         
-        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+        makeGrid();
+        pane.setCenter(modelGrid);
+ //       pane.setCenter(makeGrid(Params.world_height, Params.world_width));
 
         scene = new Scene(pane);
         window.setScene(scene);
@@ -316,9 +287,22 @@ public class Main extends Application {
 
         return hBoxBot;
   }
-
+    
+    public static void makeGrid(){
+        for(int y=0; y<Params.world_height; y++){
+              for(int x=0; x<Params.world_width; x++){
+                  if(CritterWorld.crittersArr[y][x] == null){
+                      Painter.paintCritter(x, y, Critter.CritterShape.SQUARE, Color.WHITE, Color.BLACK, Color.WHITE);
+                  } else {
+                    Painter.paintCritter(x, y, CritterWorld.crittersArr[y][x].viewShape(), CritterWorld.crittersArr[y][x].viewColor(), 
+                            CritterWorld.crittersArr[y][x].viewOutlineColor(), CritterWorld.crittersArr[y][x].viewFillColor());
+                  }
+              }
+        }
+    }
+    
     public static GridPane makeGrid(int h, int w){
-
+          
           GridPane p = new GridPane();
           p.setVgap(0);
           p.setHgap(0);
@@ -368,8 +352,8 @@ public class Main extends Application {
           }
           
           return p;
-      }
-
+    }
+  
     public static GridPane makeFightGrid(int h, int w){
 
         GridPane p = new GridPane();
@@ -411,15 +395,6 @@ public class Main extends Application {
                 
             }
         }
-        
-        
-//        Text text = new Text("$");
-//        Rectangle rec = new Rectangle();
-//        StackPane stack = new StackPane();
-//        
-//        stack.getChildren().addAll(rec,text);
-//        p.getChildren().add(stack);
-
         return p;
     }
 
@@ -464,73 +439,5 @@ public class Main extends Application {
         return critterNames;
     }
 
-    public class AnimationHandler extends Application {
-      @Override
-      public void start(Stage primaryStage) {
-
-          final BlockingQueue<String> messageQueue = new ArrayBlockingQueue<>(1);
-
-          TextArea console = new TextArea();
-
-          Button startButton = new Button("Start");
-          startButton.setOnAction(event -> {
-              MessageProducer producer = new MessageProducer(messageQueue);
-              Thread t = new Thread(producer);
-              t.setDaemon(true);
-              t.start();
-          });
-
-          final LongProperty lastUpdate = new SimpleLongProperty();
-
-          final long minUpdateInterval = 0 ; // nanoseconds. Set to higher number to slow output.
-
-          AnimationTimer timer = new AnimationTimer() {
-
-              @Override
-              public void handle(long now) {
-                  if (now - lastUpdate.get() > minUpdateInterval) {
-                      final String message = messageQueue.poll();
-                      if (message != null) {
-                          console.appendText("\n" + message);
-                      }
-                      lastUpdate.set(now);
-                  }
-              }
-
-          };
-
-          timer.start();
-
-          HBox controls = new HBox(5, startButton);
-          controls.setPadding(new Insets(10));
-          controls.setAlignment(Pos.CENTER);
-
-  //        BorderPane root = new BorderPane(console, null, null, controls, null);
-     //     Scene scene = new Scene(root,600,400);
-          primaryStage.setScene(scene);
-          primaryStage.show();
-      }
-
-      private class MessageProducer implements Runnable {
-          private final BlockingQueue<String> messageQueue ;
-
-          public MessageProducer(BlockingQueue<String> messageQueue) {
-              this.messageQueue = messageQueue ;
-          }
-
-          @Override
-          public void run() {
-              long messageCount = 0 ;
-              try {
-                  while (true) {
-                      final String message = "Message " + (++messageCount);
-                      messageQueue.put(message);
-                  }
-              } catch (InterruptedException exc) {
-                  System.out.println("Message producer interrupted: exiting.");
-              }
-          }
-      }
-
-    }
+    
 }
