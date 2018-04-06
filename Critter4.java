@@ -47,7 +47,7 @@ public class Critter4 extends Critter{
 
     @Override
     public CritterShape viewShape() {
-        return(Critter.CritterShape.CURVE);
+        return(Critter.CritterShape.PENTAGON);
     }
     
     @Override

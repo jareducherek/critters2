@@ -84,7 +84,6 @@ public class Main extends Application {
         
         makeGrid();
         pane.setCenter(modelGrid);
- //       pane.setCenter(makeGrid(Params.world_height, Params.world_width));
 
         scene = new Scene(pane);
         window.setScene(scene);
@@ -120,7 +119,8 @@ public class Main extends Application {
             }
             Critter.worldTimeStep();
             Critter.worldFightStep();
-            pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+            makeGrid();
+            pane.setCenter(modelGrid);
             pane.setBottom(addHBoxBot(currentSelectedCritter));
         }
     }));
@@ -144,8 +144,9 @@ public class Main extends Application {
         for(int i = 0; i < steps; i++){
             Critter.worldTimeStep();                        
             Critter.worldFightStep();
-        }    
-        pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+        }
+        makeGrid();
+        pane.setCenter(modelGrid);
         pane.setBottom(addHBoxBot(currentSelectedCritter));
 
     }
@@ -205,7 +206,8 @@ public class Main extends Application {
             try {
                 Critter.makeCritter(critterChoices.getValue(), 1);
                 pane.setBottom(addHBoxBot(currentSelectedCritter));
-                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+                makeGrid();
+                pane.setCenter(modelGrid);
             } catch (InvalidCritterException ex) {
                 System.out.println("invalid critter creation attempt");
             }
@@ -214,7 +216,8 @@ public class Main extends Application {
             try {
                 Critter.makeCritter(critterChoices.getValue(), 5);
                 pane.setBottom(addHBoxBot(currentSelectedCritter));
-                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+                makeGrid();
+                pane.setCenter(modelGrid);
             } catch (InvalidCritterException ex) {
                 System.out.println("invalid critter creation attempt");
             }
@@ -223,7 +226,8 @@ public class Main extends Application {
             try {
                 Critter.makeCritter(critterChoices.getValue(), 50);
                 pane.setBottom(addHBoxBot(currentSelectedCritter));
-                pane.setCenter(makeGrid(Params.world_height, Params.world_width));
+                makeGrid();
+                pane.setCenter(modelGrid);
             } catch (InvalidCritterException ex) {
                 System.out.println("invalid critter creation attempt");
             }
@@ -291,111 +295,13 @@ public class Main extends Application {
     public static void makeGrid(){
         for(int y=0; y<Params.world_height; y++){
               for(int x=0; x<Params.world_width; x++){
-                  if(CritterWorld.crittersArr[y][x] == null){
-                      Painter.paintCritter(x, y, Critter.CritterShape.SQUARE, Color.WHITE, Color.BLACK, Color.WHITE);
-                  } else {
+                  Painter.paintCritter(x, y, Critter.CritterShape.SQUARE, Color.WHITE, Color.BLACK, Color.WHITE);
+                  if(CritterWorld.crittersArr[y][x] != null){
                     Painter.paintCritter(x, y, CritterWorld.crittersArr[y][x].viewShape(), CritterWorld.crittersArr[y][x].viewColor(), 
-                            CritterWorld.crittersArr[y][x].viewOutlineColor(), CritterWorld.crittersArr[y][x].viewFillColor());
-                  }
+                            CritterWorld.crittersArr[y][x].viewOutlineColor(), CritterWorld.crittersArr[y][x].viewFillColor());                 
+                   }
               }
         }
-    }
-    
-    public static GridPane makeGrid(int h, int w){
-          
-          GridPane p = new GridPane();
-          p.setVgap(0);
-          p.setHgap(0);
-          
-          double squareWidth = ((width)/w < (height)/h) ? (width)/w : (height)/h;
-
-          Text[][] text = new Text[h][w];
-          Rectangle[][] rec = new Rectangle[h][w];
-          StackPane s;
-
-          for(int i=0; i<h; i++){
-              for(int j=0; j<w; j++){
-                  s = new StackPane();
-                  s.setPadding(new Insets(0,0,0,0));
-                  rec[i][j] = new Rectangle();
-                  rec[i][j].setX(j * squareWidth);
-                  rec[i][j].setY(i * squareWidth);
-                  rec[i][j].setWidth(squareWidth);
-                  rec[i][j].setHeight(squareWidth);
-                  rec[i][j].setFill(null);
-                  rec[i][j].setStroke(Color.BLACK);
-
-                  text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
-                  
-                  if (CritterWorld.critterGrid[i][j].equals("1")) {
-                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      text[i][j] = new Text("♆");
-                  } else if (CritterWorld.critterGrid[i][j].equals("2")) {
-                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      text[i][j] = new Text("❆"); 
-                  } else if (CritterWorld.critterGrid[i][j].equals("3")) {
-                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      text[i][j] = new Text("ↂ"); 
-                  } else if (CritterWorld.critterGrid[i][j].equals("4")) {
-                      rec[i][j].setStroke(CritterWorld.crittersArr[i][j].viewColor());
-                      text[i][j] = new Text("☀"); 
-                  } else if (CritterWorld.critterGrid[i][j].equals("@")) {
-                      text[i][j] = new Text("♣");
-                  } else if (CritterWorld.critterGrid[i][j].equals("C")) {
-                      text[i][j] = new Text("❀");
-                  }
-                                  
-                  s.getChildren().addAll(rec[i][j],text[i][j]);
-                  p.add(s, j, i);
-
-              }
-          }
-          
-          return p;
-    }
-  
-    public static GridPane makeFightGrid(int h, int w){
-
-        GridPane p = new GridPane();
-        p.setVgap(0);
-        p.setHgap(0);
-        
-        double squareWidth = ((width)/w < (height)/h) ? (width)/w : (height)/h;
-        
-        Text[][] text = new Text[h][w];
-        Rectangle[][] rec = new Rectangle[h][w];
-        StackPane s;
-              
-        
-        for(int i=0; i<h; i++){
-            for(int j=0; j<w; j++){
-                s = new StackPane();
-                s.setPadding(new Insets(0,0,0,0));
-                rec[i][j] = new Rectangle();
-                rec[i][j].setX(j * squareWidth);
-                rec[i][j].setY(i * squareWidth);
-                rec[i][j].setWidth(squareWidth);
-                rec[i][j].setHeight(squareWidth);
-                rec[i][j].setFill(null);
-                rec[i][j].setStroke(Color.BLACK);
-                
-                if(CritterWorld.occupied[i][j] == 2){
-                    rec[i][j].setFill(Color.RED);
-                    text[i][j] = new Text(" ");
-                }
-                else if(CritterWorld.occupied[i][j] > 2){
-                    rec[i][j].setFill(Color.DARKRED);
-                    text[i][j] = new Text(" ");
-                } else {
-                    text[i][j] = new Text(CritterWorld.critterGrid[i][j]);
-                }
-                
-                s.getChildren().addAll(rec[i][j],text[i][j]);
-                p.add(s, j, i);
-                
-            }
-        }
-        return p;
     }
 
     public static boolean isLong(String str) {
@@ -431,7 +337,7 @@ public class Main extends Application {
         for(File names : fileArray){
             if(names.getName().contains(".java") && !names.getName().equals("Main.java") && !names.getName().equals("Params.java")
                     && !names.getName().equals("InvalidCritterException.java") && !names.getName().equals("Header.java") && !names.getName().equals("CritterWorld.java") &&
-                    !names.getName().equals("Critter.java")){
+                    !names.getName().equals("Critter.java") && !names.getName().equals("Painter.java")){
                 critterNames.add(names.getName().split("\\.")[0]);
             }
             

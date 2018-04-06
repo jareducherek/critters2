@@ -14,7 +14,7 @@ public abstract class Critter {
             STAR,
             PENTAGON,
             HOURGLASS, 
-            CURVE
+            BELL
     }
 
     /* the default color is white, which I hope makes critters invisible by default

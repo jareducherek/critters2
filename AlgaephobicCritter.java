@@ -44,9 +44,15 @@ public class AlgaephobicCritter extends Critter {
 	}
 
 	@Override
-	public CritterShape viewShape() { return CritterShape.PENTAGON; }
+	public CritterShape viewShape() { return CritterShape.SQUARE; }
 
 	@Override
 	public javafx.scene.paint.Color viewOutlineColor() { return javafx.scene.paint.Color.SALMON; }
+        
+        @Override
+	public javafx.scene.paint.Color viewColor() { return javafx.scene.paint.Color.SALMON; }
+        
+        @Override
+	public javafx.scene.paint.Color viewFillColor() { return javafx.scene.paint.Color.SALMON; }
 
 }
